@@ -1,10 +1,10 @@
 import docker
-from flask import request, jsonify
+from flask import request, jsonify, Response
 import subprocess as sp
 
 from resdb.docker import docker_client
 from resdb import app
-from resdb.utils import deploy_config
+from resdb.utils import *
 
 
 def get_docker_compose_template(clients=1, replicas=4):
@@ -28,13 +28,8 @@ def get_docker_compose_template(clients=1, replicas=4):
 
 @app.route('/hello')
 def hello():
+    # Sanity check endpoint
     return 'Hello, World!'
-
-
-# @app.route('/replicas')
-# def get_replicas():
-#     docker_client.containers.list()
-
 
 @app.route('/alive', methods=['GET'])
 def get_alive_status():
@@ -68,14 +63,11 @@ def deploy_resdb():
     res, errors = check_post(post_data)
 
     if res:
+        # We need to livestream
         output = deploy_config(post_data["replicas"], post_data["clients"])
-        return jsonify(status = "ok", data = output)
+        return Response(output, mimetype="text/event-stream")
     else:
         return jsonify(errors = errors), 400
-
-    deploy_config()
-    # run the teardown, then the build script
-
 
 # @app.route('/stop', ['POST'])
 # def stop_resdb():

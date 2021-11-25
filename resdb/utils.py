@@ -1,4 +1,4 @@
-import os
+import os, time, sys
 import subprocess as sp
 from resdb import app
 import functools
@@ -9,19 +9,32 @@ import functools
 #     print(output)
 
 def in_dir(path):
+    """
+    Wrapper so that the function cd's to the dir before executing
+    Ideal whe calling os-scripts
+    """
     def dir_arg_wraper(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             pushd = os.getcwd()
             os.chdir(path)
-            func(*args, **kwargs)
+            ret = func(*args, **kwargs)
             os.chdir(pushd)
+            return ret
         return wrapper
     return dir_arg_wraper
 
 
-@in_dir(app.config["RESDB_SOURCE_PATH"])
 def deploy_config(replicas, clients):
-    sources = app.config["RESDB_SOURCE_PATH"]
-    output = sp.check_output([ f"{sources}/resilientDB-docker", f"--replicas={replicas}", f"--clients={clients}" ]).decode("utf8")
-    return output
+
+    # https://stackoverflow.com/questions/18421757/live-output-from-subprocess-command
+    output = sp.Popen(
+        [ "./resilientDB-docker", f"--replicas={replicas}", f"--clients={clients}" ],
+        cwd = app.config["RESDB_SOURCE_PATH"],
+        stderr = sp.STDOUT, # redirect to stdout
+        stdout = sp.PIPE,   # Pipe this, can livestream
+    )
+
+    for line in iter(output.stdout.readline, b''):
+        # sys.stdout.write(line.decode("utf8"))
+        yield line.decode("utf8")
