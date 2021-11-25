@@ -26,6 +26,12 @@ def get_docker_compose_template(clients=1, replicas=4):
     return ret
 
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+    return app.send_static_file("index.html")
+
+
 @app.route('/hello')
 def hello():
     # Sanity check endpoint
