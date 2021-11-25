@@ -1,7 +1,11 @@
 import docker
-from resdb.docker import docker_client
-from flask import app, request, jsonify
+from flask import request, jsonify
 import subprocess as sp
+
+from resdb.docker import docker_client
+from resdb import app
+from resdb.utils import deploy_config
+
 
 def get_docker_compose_template(clients=1, replicas=4):
     template = \
@@ -21,15 +25,22 @@ def get_docker_compose_template(clients=1, replicas=4):
 
     return ret
 
-@app.route('/replicas', ['GET'])
-def get_replicas():
-    all_containers = docker_client.containers.list()
+
+@app.route('/hello')
+def hello():
+    return 'Hello, World!'
 
 
-@app.route('/alive', ['GET'])
+# @app.route('/replicas')
+# def get_replicas():
+#     docker_client.containers.list()
+
+
+@app.route('/alive', methods=['GET'])
 def get_alive_status():
     ret = [ {
         "id": a.id,
+        "short-id": a.short_id,
         "type": "client" if 'c' in a.name else 'replica',
         "status": a.status,
         "name": a.name
@@ -37,36 +48,62 @@ def get_alive_status():
 
     return jsonify(ret)
 
-@app.route('/deploy', ['POST'])
+
+@app.route('/deploy', methods=['POST'])
 def deploy_resdb():
-    # Run the build-up script
 
-@app.route('/stop', ['POST'])
-def stop_resdb():
-    # Run the take-down script
+    def check_post(data):
+        errors = []
+        if "replicas" not in data:
+            errors.append("Number of replicas not specified")
+        if "clients" not in data:
+            errors.append("Number of clients not specified")
 
-@app.route('/pause/<id>', ['PATCH'])
+        if len(errors) == 0:
+            return True, errors
+        else:
+            return False, errors
+
+    post_data = request.json
+    res, errors = check_post(post_data)
+
+    if res:
+        output = deploy_config(post_data["replicas"], post_data["clients"])
+        return jsonify(status = "ok", data = output)
+    else:
+        return jsonify(errors = errors), 400
+
+    deploy_config()
+    # run the teardown, then the build script
+
+
+# @app.route('/stop', ['POST'])
+# def stop_resdb():
+#     pass
+#     # Run the take-down script
+
+
+@app.route('/pause/<id>',  methods=['PATCH'])
 def pause_container(id):
     try:
         docker_client.containers.get(id).pause()
         return jsonify({
-            "status": "Paused"
+            "status": "paused"
         })
     except docker.errors.APIError:
         return jsonify({
             "status": "error",
             "message": "Container already paused or stopped"
-        })
+        }), 400
 
-@app.route('/resume/<id>', ['PATCH'])
+
+@app.route('/resume/<id>',  methods=['PATCH'])
 def resume_container(id):
     try:
         docker_client.containers.get(id).unpause()
-        return jsonify({
-            "status": "running"
-        })
+        return jsonify(status="running")
     except docker.errors.APIError:
-        return jsonify({
-            "status": "error",
-            "message": "Container already running or stopped"
-        })
+        return jsonify(
+            status = "error",
+            message = "Container already running or stopped"
+        ), 400
