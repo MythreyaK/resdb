@@ -75,10 +75,10 @@ def deploy_resdb():
     else:
         return jsonify(errors = errors), 400
 
-# @app.route('/stop', ['POST'])
-# def stop_resdb():
-#     pass
-#     # Run the take-down script
+@app.route('/stop', ['POST'])
+def stop_resdb():
+    output = sp.check_output(["./down.sh"], cwd = app.config["RESDB_SOURCE_PATH"]).decode("utf8")
+    return jsonify(status = "Ok", message = "ResilientDB stopped")
 
 
 @app.route('/pause/<id>',  methods=['PATCH'])
