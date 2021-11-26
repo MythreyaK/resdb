@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500");
+
+:root {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: Roboto;
+    font-weight: 400;
+    width: 100%;
+    margin: 0;
+    font-size: 1.6rem;
+}
+
+.header, .footer {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 16px;
+background-color: #648ca6;
+}
