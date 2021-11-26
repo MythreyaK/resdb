@@ -1,20 +1,25 @@
 <template>
   <div>
     <div class="main-overview">
-      <div class="overviewcard" v-for="(replica, index) in alive.status" :key="index">
-        <div class="overviewcard__icon">{{index }}</div>
-        <div class="overviewcard__info">{{replica}}</div>
-        <button @click="pauseCall(index)">
+      <div class="overviewcard" v-for="replica in alive" :key="replica">
+        <div class="overviewcard__icon">{{replica.name }}</div>
+        <div v-if="replica.status == 'running'">
+          <div class="overviewcard__info">{{replica.status}}</div>
+          <img class = "status_logo" src="../assets/running.png" >
+        </div>
+        <div v-else>
+          <div class="overviewcard__info">{{replica.status}}</div>
+          <img class = "status_logo" src="../assets/stopped.png">
+        </div>
+
+        <button class="action_button" @click="pauseCall(replica.id)">
               Pause
         </button>
 
-        <button @click="resumeCall(index)">
+        <button class="action_button" @click="resumeCall(replica.id)">
               Resume
         </button>
-
-
       </div>
-      <p> Total deployed replicas: {{replicas.no_of_replicas}} </p>
     </div>
     
   </div>
@@ -33,7 +38,7 @@ export default {
     pauseAPI: function(replicaID) {
       console.log(replicaID);
       var pauseApi =
-        'http://0.0.0.0:8080/pause/' + String(replicaID);
+        'http://0.0.0.0:5000/pause/' + String(replicaID);
       this.completePauseAPI = pauseApi;
     },
     pauseCall: async function(replicaID) {
@@ -50,7 +55,7 @@ export default {
     resumeAPI: function(replicaID) {
       console.log(replicaID);
       var resumeApi =
-        'http://0.0.0.0:8080/resume/' + String(replicaID);
+        'http://0.0.0.0:5000/resume/' + String(replicaID);
       this.completeResumeAPI = resumeApi;
     },
     resumeCall: async function(replicaID) {
@@ -101,5 +106,15 @@ export default {
   padding: 20px;
   background-color: #6577B3;
   border-radius: 10px;
+}
+
+.action_button {
+  border-radius: 5px;
+}
+
+.status_logo {
+  /* height: 10%; */
+  max-width: 40%;
+  height: auto;
 }
 </style>

@@ -36,7 +36,7 @@ export default {
         no_of_replicas: 4,
         replicas: ['Replica0', 'Replica1', 'Replica2', 'Replica3']
       },
-      alive: {
+      alive2: {
         status: {
           Replica0: 'Alive',
           Replica1: 'Alive',
@@ -44,21 +44,31 @@ export default {
           Replica3: 'Dead',
         }
       },
+      alive: [
+          {
+              "id": "102969df9360f10f9b00627f35d1f414c167f1bbe208c3aa7d09de357cf81b4f",
+              "name": "c1", // "cx" for clients, "sx" for replicas
+              "short-id": "102969df93",
+              "status": "running", // or "paused"
+              "type": "client" // or "replica"
+          }
+        ],
     }
   },
   methods: {
     heartbeatAPI: async function() {
       var aliveApi =
-        'http://0.0.0.0:8080/alive'
+        'http://0.0.0.0:5000/alive'
       this.completeAliveAPI = aliveApi;
+      console.log(aliveApi);
     },
     heartbeatCall: async function() {
       await this.heartbeatAPI();
       var axios = require('axios'); // for handling weather api promise
       var aliveApiResponse = await axios.get(this.completeAliveAPI);
-      print(aliveApiResponse);
+      console.log(aliveApiResponse);
       if (aliveApiResponse.status === 200) {
-        this.rawWeatherData = weatherApiResponse.data;
+        this.alive = aliveApiResponse.data;
       } else {
         alert('Hmm... Seems like the server is down!');
       }
