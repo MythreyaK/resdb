@@ -5,6 +5,7 @@ import subprocess as sp
 from resdb.docker import docker_client
 from resdb import app
 from resdb.utils import *
+from resdb.sock import get_log
 
 
 def get_docker_compose_template(clients=1, replicas=4):
@@ -75,13 +76,13 @@ def deploy_resdb():
     else:
         return jsonify(errors = errors), 400
 
-@app.route('/stop', ['POST'])
+@app.route('/stop', methods=['POST'])
 def stop_resdb():
     output = sp.check_output(["./down.sh"], cwd = app.config["RESDB_SOURCE_PATH"]).decode("utf8")
     return jsonify(status = "Ok", message = "ResilientDB stopped")
 
 
-@app.route('/pause/<id>',  methods=['PATCH'])
+@app.route('/pause/<id>', methods=['PATCH'])
 def pause_container(id):
     try:
         docker_client.containers.get(id).pause()
@@ -105,3 +106,7 @@ def resume_container(id):
             status = "error",
             message = "Container already running or stopped"
         ), 400
+
+@app.route('/logstream')
+def logstream():
+    return Response(get_log(), mimetype="text/event-stream")
