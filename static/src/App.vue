@@ -2,12 +2,16 @@
 <div class="grid-container">
   <header class="header">
   <div class="header__search">Deployment Manager</div>
-  <div class="header__avatar">ResilientDB</div>
+  <div class="header__avatar"><img class="img-responsive" width="109" height="42" src="./assets/site_logo.png"></div>
+  
   </header>
 
 
   <aside class="sidenav"></aside>
   <main class="main">
+      <button id="search-btn" @click="heartbeatCall">
+              Refresh
+      </button>
       <dashboard-content   :replicas="replicas"  :alive="alive"></dashboard-content>
   </main>
   <footer class="footer">
@@ -43,10 +47,35 @@ export default {
     }
   },
   methods: {
-
+    heartbeatAPI: async function() {
+      var aliveApi =
+        'http://0.0.0.0:8080/alive'
+      this.completeAliveAPI = aliveApi;
+    },
+    heartbeatCall: async function() {
+      await this.heartbeatAPI();
+      var axios = require('axios'); // for handling weather api promise
+      var aliveApiResponse = await axios.get(this.completeAliveAPI);
+      print(aliveApiResponse);
+      if (aliveApiResponse.status === 200) {
+        this.rawWeatherData = weatherApiResponse.data;
+      } else {
+        alert('Hmm... Seems like the server is down!');
+      }
+    },
+    pollData: function(){
+      setInterval(() => {
+        this.heartbeatCall();
+		    }, 1000)
+    },
+  },
+  beforeDestroy () {
+	  clearInterval(this.polling) 
+  },
+  created () {
+	  // this.pollData()
   },
   computed: {
-
   },
 }
 </script>

@@ -4,6 +4,15 @@
       <div class="overviewcard" v-for="(replica, index) in alive.status" :key="index">
         <div class="overviewcard__icon">{{index }}</div>
         <div class="overviewcard__info">{{replica}}</div>
+        <button @click="pauseCall(index)">
+              Pause
+        </button>
+
+        <button @click="resumeCall(index)">
+              Resume
+        </button>
+
+
       </div>
       <p> Total deployed replicas: {{replicas.no_of_replicas}} </p>
     </div>
@@ -21,7 +30,40 @@ export default {
     };
   },
   methods: {
-
+    pauseAPI: function(replicaID) {
+      console.log(replicaID);
+      var pauseApi =
+        'http://0.0.0.0:8080/pause/' + String(replicaID);
+      this.completePauseAPI = pauseApi;
+    },
+    pauseCall: async function(replicaID) {
+      await this.pauseAPI(replicaID);
+      var axios = require('axios'); // for handling weather api promise
+      var pauseApiResponse = await axios.post(this.completePauseAPI );
+      console.log(pauseApiResponse);
+      if (pauseApiResponse.status === 200) {
+        this.pauseData = pauseApiResponse.data;
+      } else {
+        alert('Hmm... Seems like the server is down!');
+      }
+    },
+    resumeAPI: function(replicaID) {
+      console.log(replicaID);
+      var resumeApi =
+        'http://0.0.0.0:8080/resume/' + String(replicaID);
+      this.completeResumeAPI = resumeApi;
+    },
+    resumeCall: async function(replicaID) {
+      await this.resumeAPI(replicaID);
+      var axios = require('axios'); // for handling weather api promise
+      var resumeApiResponse = await axios.post(this.completeResumeAPI );
+      console.log(resumeApiResponse);
+      if (resumeApiResponse.status === 200) {
+        this.resumeData = resumeApiResponse.data;
+      } else {
+        alert('Hmm... Seems like the server is down!');
+      }
+    },
   },
 
 };
@@ -58,5 +100,6 @@ export default {
   justify-content: space-between;
   padding: 20px;
   background-color: #6577B3;
+  border-radius: 10px;
 }
 </style>
