@@ -1,4 +1,4 @@
-import os, time, sys
+import os
 import subprocess as sp
 from resdb import app
 import functools
