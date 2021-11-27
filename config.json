@@ -1,5 +1,5 @@
 {
-    "RESDB_SOURCE_PATH": "/put-path/to-resdb-source/here",
+    "RESDB_SOURCE_PATH": "/Users/ashwinsekhari/Desktop/masters/dds/resilientdb/",
     "LOGGER_LISTEN_IP": "127.0.0.1",
     "LOGGER_LISTEN_PORT": 50001
 }
