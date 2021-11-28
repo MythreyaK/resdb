@@ -16,7 +16,7 @@
     <br>
         <input type="number" name="replicas" v-model="input.replicas" placeholder="Replicas" min="0" step="1"/>
         <input type="number" name="clients" v-model="input.clients" placeholder="Clients" min="0" step="1"/>
-        <button class="button_stop" type="button" v-on:click="ok()">OK</button>
+        <button class="button_stop" type="button" v-on:click="create()">create</button>
     </div>    
     </div>
       <dashboard-content   :replicas="replicas"  :alive="alive" :log_data="log_data"></dashboard-content>
@@ -68,7 +68,7 @@ export default {
     }
   },
   methods: {
-    ok: function() {
+    create: function() {
      if(this.input.replicas == "" && this.input.clients == "") {
        console.log("enter values");
      }
