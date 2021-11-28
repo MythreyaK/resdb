@@ -17,9 +17,10 @@
       </button>
     <div class="setting">
     <br>
-        <input type="number" name="replicas" v-model="input.replica_count" placeholder="Replicas (Default 4)" min="0" step="1"/>
-        <input type="number" name="clients" v-model="input.client_count" placeholder="Clients (Default 1)" min="0" step="1"/>
-        <button class="button_stop" type="button" v-on:click="createDeployment()">OK</button>
+    <input type="number" name="replicas" v-model="input.replica_count" placeholder="Replicas (Default 4)" min="0" step="1"/>
+    <input type="number" name="clients" v-model="input.client_count" placeholder="Clients (Default 1)" min="0" step="1"/>
+    <button class="button_stop" type="button" v-on:click="createDeployment()">Create Deployment</button>
+
     </div>    
     </div>
       <dashboard-content   :replicas="replicas"  :alive="alive" :log_data="log_data"></dashboard-content>
@@ -60,9 +61,6 @@ export default {
   },
   methods: {
     createDeployment: async function() {
-     if(this.input.replica_count == "" && this.input.client_count == "") {
-       console.log("enter values");
-     }
       var deployApi =  'http://0.0.0.0:5000/deploy';
       var axios = require('axios'); 
       var deployApiResponse = await axios.post(this.deployApi, {
@@ -74,9 +72,7 @@ export default {
       } else {
         alert('Hmm... Seems like the server is down!');
       }
-        
     },
-
     heartbeatAPI: async function() {
       var aliveApi =
         'http://0.0.0.0:5000/alive'
