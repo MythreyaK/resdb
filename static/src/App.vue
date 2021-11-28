@@ -12,6 +12,12 @@
       <button class="button_stop" @click="stopCall()">
             Stop
       </button>
+    <div class="setting">
+    <br>
+        <input type="number" name="replicas" v-model="input.replicas" placeholder="Replicas" min="0" step="1"/>
+        <input type="number" name="clients" v-model="input.clients" placeholder="Clients" min="0" step="1"/>
+        <button class="button_stop" type="button" v-on:click="ok()">OK</button>
+    </div>    
     </div>
       <dashboard-content   :replicas="replicas"  :alive="alive" :log_data="log_data"></dashboard-content>
   </main>
@@ -28,11 +34,15 @@ import Content from './components/Content.vue'
 
 export default {
   name: 'app',
-  components: {
+  components: { 
     'dashboard-content': Content
   },
   data () {
     return {
+       input: {
+                    replicas: "",
+                    clients: ""
+                },
       replicas: {
         no_of_replicas: 4,
         replicas: ['Replica0', 'Replica1', 'Replica2', 'Replica3']
@@ -58,6 +68,11 @@ export default {
     }
   },
   methods: {
+    ok: function() {
+     if(this.input.replicas == "" && this.input.clients == "") {
+       console.log("enter values");
+     }
+    },
     heartbeatAPI: async function() {
       var aliveApi =
         'http://0.0.0.0:5000/alive'
@@ -171,4 +186,14 @@ export default {
   word-break: break-word;
   border: 0;
 }
+
+.setting {
+ color: #cf142b;
+   font-size: 1.6rem;
+   font-weight: 500;
+   line-height: 19px;
+   margin-bottom: 15px;
+}
+
 </style>
+
