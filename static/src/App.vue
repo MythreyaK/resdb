@@ -12,11 +12,14 @@
       <button class="button_stop" @click="stopCall()">
             Stop
       </button>
+            <button class="button_stop" @click="heartbeatCall()">
+            refresh
+      </button>
     <div class="setting">
     <br>
-        <input type="number" name="replicas" v-model="input.replicas" placeholder="Replicas" min="0" step="1"/>
-        <input type="number" name="clients" v-model="input.clients" placeholder="Clients" min="0" step="1"/>
-        <button class="button_stop" type="button" v-on:click="ok()">OK</button>
+        <input type="number" name="replicas" v-model="input.replica_count" placeholder="Replicas (Default 4)" min="0" step="1"/>
+        <input type="number" name="clients" v-model="input.client_count" placeholder="Clients (Default 1)" min="0" step="1"/>
+        <button class="button_stop" type="button" v-on:click="createDeployment()">OK</button>
     </div>    
     </div>
       <dashboard-content   :replicas="replicas"  :alive="alive" :log_data="log_data"></dashboard-content>
@@ -40,23 +43,11 @@ export default {
   data () {
     return {
        input: {
-                    replicas: "",
-                    clients: ""
+                    replica_count: 4,
+                    client_count: 1
                 },
-      replicas: {
-        no_of_replicas: 4,
-        replicas: ['Replica0', 'Replica1', 'Replica2', 'Replica3']
-      },
-      alive2: {
-        status: {
-          Replica0: 'Alive',
-          Replica1: 'Alive',
-          Replica2: 'Alive',
-          Replica3: 'Dead',
-        }
-      },
       log_data: "Hello my name is Ashwin",
-      alive: [
+      alive: [ //placeholder
           {
               "id": "102969df9360f10f9b00627f35d1f414c167f1bbe208c3aa7d09de357cf81b4f",
               "name": "c1", // "cx" for clients, "sx" for replicas
@@ -68,11 +59,24 @@ export default {
     }
   },
   methods: {
-    ok: function() {
-     if(this.input.replicas == "" && this.input.clients == "") {
+    createDeployment: async function() {
+     if(this.input.replica_count == "" && this.input.client_count == "") {
        console.log("enter values");
      }
+      var deployApi =  'http://0.0.0.0:5000/deploy';
+      var axios = require('axios'); 
+      var deployApiResponse = await axios.post(this.deployApi, {
+                                                replicas: this.input.replica_count,
+                                                clients: this.input.client_count
+                                              });
+      if (deployApiResponse.status === 200) {
+        console.log("yuhuuu deployd the server");
+      } else {
+        alert('Hmm... Seems like the server is down!');
+      }
+        
     },
+
     heartbeatAPI: async function() {
       var aliveApi =
         'http://0.0.0.0:5000/alive'

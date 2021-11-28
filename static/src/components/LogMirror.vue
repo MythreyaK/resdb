@@ -14,23 +14,33 @@ export default {
     };
   },
   methods: {
-      getLog: async function() {
-          fetch('/apiURL')
-            .then(response=> {
-            const reader = reader.body.getReader()
-            let data = []
-            return reader.read().then(read = (result)=>{
-                if(result.done){
-                    return data
-                }
+      getLog: function() {
+          console.log('in fetch');
+        fetch('http://0.0.0.0:5000/logstream')
+        .then(response => response.body)
+        .then(res => res.on('readable', () => {
+        let chunk;
+        while (null !== (chunk = res.read())) {
+            console.log(chunk.toString());
+        }
+        })).catch(err => console.log(err));
+        //   fetch('')
+        //     .then(response=> {
+        //     const reader = response.getReader()
+        //     let data = []
+        //     return reader.read().then(read = (result)=>{
+        //         if(result.done){
+        //             return data
+        //         }
 
-                data.push(result.value)
-                return reader.read().then(read)
-            })
-            })
-            .then(data => {
-                // Do whatever you want with your data
-            })
+        //         data.push(result.value)
+        //         return reader.read().then(read)
+        //     })
+        //     })
+        //     .then(data => {
+        //         // Do whatever you want with your data
+        //         this.log_data = data;
+        //     })
 
             // const axios = require('axios');
             // const res = await axios.get('https://images.unsplash.com/photo-1506812574058-fc75fa93fead', {
@@ -42,6 +52,9 @@ export default {
       },
 
   },
+  created() {
+      this.getLog();
+  }
 
 };
 </script>
