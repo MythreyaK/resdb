@@ -63,7 +63,7 @@ export default {
     createDeployment: async function() {
       var deployApi =  'http://0.0.0.0:5000/deploy';
       var axios = require('axios'); 
-      var deployApiResponse = await axios.post(this.deployApi, {
+      var deployApiResponse = await axios.post(deployApi, {
                                                 replicas: this.input.replica_count,
                                                 clients: this.input.client_count
                                               });
@@ -111,7 +111,7 @@ export default {
 	  clearInterval(this.polling) 
   },
   created () {
-	  this.pollData()
+	  // this.pollData()
   },
   computed: {
   },
