@@ -78,7 +78,7 @@ def deploy_resdb():
 
 @app.route('/stop', methods=['POST'])
 def stop_resdb():
-    output = sp.check_output(["./down.sh"], cwd = app.config["RESDB_SOURCE_PATH"]).decode("utf8")
+    output = sp.check_output(["./down.sh"], cwd = app.config["RESDB_SOURCE_PATH"] + "/scripts").decode("utf8")
     return jsonify(status = "Ok", message = "ResilientDB stopped")
 
 
