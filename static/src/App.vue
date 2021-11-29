@@ -1,4 +1,5 @@
 <template>
+<v-app>
 <div class="grid-container">
   <header class="header" role="banner">
   <div class="header__search">Deployment Manager</div>
@@ -8,29 +9,25 @@
   
   <main class="main">
     <div class='managment'>
+        <br>
+      <div class="setting">
       <br>
-      <button class="button_stop" @click="stopCall()">
-            Stop
-      </button>
-            <button class="button_stop" @click="heartbeatCall()">
-            refresh
-      </button>
-    <div class="setting">
-    <br>
-    <input type="number" name="replicas" v-model="input.replica_count" placeholder="Replicas (Default 4)" min="0" step="1"/>
-    <input type="number" name="clients" v-model="input.client_count" placeholder="Clients (Default 1)" min="0" step="1"/>
-    <button class="button_stop" type="button" v-on:click="createDeployment()">Create Deployment</button>
+      <v-text-field label="Replicas" outlined name="replica_count" v-model="input.replica_count" placeholder="Replicas (Default 4)"/>
+      <v-text-field label="Clients" outlined name="client_count" v-model="input.client_count" placeholder="Clients (Default 1)"/>
 
+      <v-btn  class="ma-2" color="green" dark v-on:click="createDeployment()"><v-icon dark>mdi-wrench</v-icon> Create Deployment</v-btn>
+      <v-btn depressed color="error" @click="stopCall()">Stop</v-btn>
+      <v-btn icon color="green" @click="heartbeatCall()"><v-icon>mdi-cached</v-icon></v-btn>
+      </div>
     </div>    
-    </div>
-      <dashboard-content   :replicas="replicas"  :alive="alive" :log_data="log_data"></dashboard-content>
+      <dashboard-content :alive="alive" :log_data="log_data"></dashboard-content>
   </main>
   <footer class="footer">
   <div class="footer__copyright">&copy; 2021</div>
   <div class="footer__signature">UC Davis</div>
   </footer>
 </div>
-
+</v-app>
 </template>
 
 <script>

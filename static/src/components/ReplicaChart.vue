@@ -1,43 +1,22 @@
 <template>
   <div>
-    <div class="main-overview">
-      <div class="deck" v-for="replica in alive" :key="replica.name" :id="replica.name">
-        <div class="card">
-          <div class="card_title">{{replica.name }}</div>
-            
-          <div v-if="replica.status == 'running'">
-            <!-- <div class="overviewcard__info">{{replica.status}}</div> -->
-          <div class="card_data">
-            <img class = "status_logo" src="../assets/running.png" >
-          </div>
+      <div v-for="replica in alive" :key="replica.name">
+          <div :onload="createNode(replica)"/>
+      </div>
+      
+      <center><h2> Replicas </h2></center>
+      <div class="main-overview" id="replica_grid">
+      </div>
 
-          <div class="card_data_2">
-            <button class="button_custom" @click="pauseCall(replica.id, replica.name)">
-                  Pause
-            </button>
-          </div>
-          </div>
-
-          <div v-else>
-            <div class="card_data">
-              <img class = "status_logo" src="../assets/stopped.png" >
-            </div>
-
-            <div class="card_data_2">
-              <button class="button_custom" @click="resumeCall(replica.id, replica.name)">
-                    Resume
-              </button>
-            </div>
-          </div>
-        </div>
+      <center><h2> Clients </h2></center>
+      <div class="main-overview" id="client_grid">
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 export default {
-  props: ["replicas", "alive"],
+  props: ["alive"],
   components: {},
   data() {
     
@@ -46,19 +25,89 @@ export default {
     };
   },
   methods: {
+
+    createNode: async function(replica) {
+      if (document.contains(document.getElementById(replica.name))) {
+            document.getElementById(replica.name).remove();
+      }
+
+      console.log("creating replica:", replica.name);
+      var node = document.createElement("div");                 // Create a <div> node
+      node.className = "deck";                                    // <div deck>
+
+
+      var card = document.createElement("div");         // Create a text node
+      card.className = "card";
+
+      var title = document.createElement("div");         // Create a text node
+      title.className = "card_title";
+
+      var text = document.createTextNode(replica.name);
+
+      if (replica.status == "running" ) {
+          var card_data = document.createElement("div");
+          card_data.className = "card_data";
+
+          var img = document.createElement("img");
+          img.className = "status_logo";
+          img.src = "./src/assets/running.png";
+
+          card_data.appendChild(img);
+
+          var button = document.createElement('input');
+          button.className = "button_custom";
+          button.setAttribute('type', 'button'); // input element of type button
+          button.setAttribute('value', 'PAUSE');
+          button.addEventListener('click', this.pauseCall.bind(event, replica.id), false);
+
+          card_data.appendChild(button);
+      }
+      else {
+          var card_data = document.createElement("div");
+          card_data.className = "card_data";
+
+          var img = document.createElement("img");
+          img.className = "status_logo";
+          img.src = "./src/assets/stopped.png";
+
+          card_data.appendChild(img);
+
+          var button = document.createElement('input');
+          button.className = "button_custom";
+          button.setAttribute('type', 'button'); // input element of type button
+          button.setAttribute('value', 'RESUME');
+          button.addEventListener('click', this.resumeCall.bind(event, replica.id), false);
+          card_data.appendChild(button);
+      }
+
+      title.appendChild(text);
+      card.appendChild(title);
+      card.appendChild(card_data);
+      node.appendChild(card);                              // Append the text to <li>
+      node.id = replica.name;
+
+      if (replica.type == "client") {
+        document.getElementById('client_grid').appendChild(node);
+      }
+      else {
+        document.getElementById('replica_grid').appendChild(node);
+      }
+    },
+
     pauseAPI: function(replicaID) {
       console.log(replicaID);
       var pauseApi =
         'http://0.0.0.0:5000/pause/' + String(replicaID);
       this.completePauseAPI = pauseApi;
     },
-    pauseCall: async function(replicaID, replicaName) {
+    pauseCall: async function(replicaID) {
       await this.pauseAPI(replicaID);
 
       // document.getElementById(replicaName).className = "paused";
 
       var axios = require('axios'); // for handling weather api promise
       var pauseApiResponse = await axios.patch(this.completePauseAPI );
+      console.log('Puase API called', replicaID);
       console.log(pauseApiResponse);
       if (pauseApiResponse.status === 200) {
         this.pauseData = pauseApiResponse.data;
@@ -72,10 +121,11 @@ export default {
         'http://0.0.0.0:5000/resume/' + String(replicaID);
       this.completeResumeAPI = resumeApi;
     },
-    resumeCall: async function(replicaID, replicaName) {
+    resumeCall: async function(replicaID) {
       await this.resumeAPI(replicaID);
       // document.getElementById(replicaName).className = "running";
 
+      console.log('Resume API called', replicaID);
       var axios = require('axios'); // for handling weather api promise
       var resumeApiResponse = await axios.patch(this.completeResumeAPI );
       console.log(resumeApiResponse);

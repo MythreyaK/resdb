@@ -1,6 +1,6 @@
 <template>
  <div style="position: relative;">
-     <replica-chart :replicas="replicas" :alive="alive"></replica-chart>
+     <replica-chart :alive="alive"></replica-chart>
      <hr>
      Logs:
      <hr>
@@ -13,7 +13,7 @@ import ReplicaChart from './ReplicaChart.vue';
 import LogMirror from './LogMirror.vue';
 
 export default {
- props: ['replicas', 'alive', 'log_data'],
+ props: ['alive', 'log_data'],
  components: {
    'replica-chart': ReplicaChart,
    'log-mirror': LogMirror
