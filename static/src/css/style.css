@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: Roboto;
+    font-family: Poppins, Roboto, sans-serif !important;
     font-weight: 400;
     width: 100%;
     margin: 0;
@@ -18,4 +18,9 @@ align-items: center;
 justify-content: space-between;
 padding: 0 16px;
 background-color: #648ca6;
+}
+
+.v-application {
+    font-family: Poppins, Roboto, sans-serif !important;
+    line-height: 1.5;
 }
